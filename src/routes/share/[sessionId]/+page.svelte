@@ -288,9 +288,9 @@
 					<span style="font-size: 0.5625rem; font-weight: 600; color: var(--color-score-high);">Done ✓</span>
 				</div>
 
-				<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-					<span style="font-size: 0.6875rem; font-weight: 700; color: var(--color-secondary); opacity: 0.5; letter-spacing: -0.01em;">x%</span>
-					<span style="font-size: 0.5rem; color: var(--color-secondary); opacity: 0.4;">compatible</span>
+				<div style="display: flex; flex-direction: column; align-items: center; gap: 1px;">
+					<span style="font-size: 0.9375rem; font-weight: 800; color: var(--color-primary); letter-spacing: -0.02em;">x%</span>
+					<span style="font-size: 0.5625rem; font-weight: 500; color: var(--color-secondary);">compatible</span>
 				</div>
 
 				<div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
