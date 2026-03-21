@@ -118,8 +118,11 @@ function assignArchetype(answers: number[]): ArchetypeId {
 	const anchorScore = (100 - socialEnergy) * 0.3 + (100 - emotionalStyle) * 0.3 + structure * 0.4;
 	const compassScore = (100 - emotionalStyle) * 0.3 + structure * 0.5 + socialEnergy * 0.2;
 
-	const midRange = Math.abs(50 - socialEnergy) < 15 && Math.abs(50 - emotionalStyle) < 15;
-	const drifterScore = midRange ? 70 : 30;
+	const midRange =
+		Math.abs(50 - socialEnergy) < 10 &&
+		Math.abs(50 - emotionalStyle) < 10 &&
+		Math.abs(50 - structure) < 10;
+	const drifterScore = midRange ? 55 : 20;
 
 	const scores: [ArchetypeId, number][] = [
 		['spark', sparkScore],
