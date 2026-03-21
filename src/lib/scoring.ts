@@ -28,7 +28,7 @@ function questionCompatibility(questionIndex: number, a: number, b: number): num
 }
 
 function spreadCurve(raw: number): number {
-	const stretched = 50 + (raw - 50) * 1.4;
+	const stretched = 50 + (raw - 50) * 1.2;
 	return Math.round(Math.max(0, Math.min(100, stretched)));
 }
 
@@ -107,15 +107,30 @@ function pickAlignment(scores: number[]): string {
 }
 
 function assignArchetype(answers: number[]): ArchetypeId {
+	// Q1=socialEnergy, Q2=emotionalApproach, Q3=argumentStyle, Q4=respected/loved,
+	// Q5=silenceComfort, Q6=spontaneity, Q7=boundaries, Q8=honesty, Q9=listener/talker, Q10=exes
 	const socialEnergy = avg(answers[0], answers[8]);
 	const emotionalStyle = avg(answers[2], answers[3], answers[7]);
-	const structure = avg(answers[1], answers[4], answers[5], answers[9]);
+	const structure = avg(answers[4], answers[5], answers[9]);
 
-	if (socialEnergy >= 60) return 'spark';
-	if (socialEnergy < 50 && emotionalStyle >= 55) return 'mirror';
-	if (socialEnergy < 50 && emotionalStyle < 45) return 'anchor';
-	if (emotionalStyle < 45 && structure >= 55) return 'compass';
-	return 'drifter';
+	const sparkScore = socialEnergy * 0.6 + (100 - structure) * 0.2 + emotionalStyle * 0.2;
+	const mirrorScore = (100 - socialEnergy) * 0.3 + emotionalStyle * 0.5 + (100 - structure) * 0.2;
+	const anchorScore = (100 - socialEnergy) * 0.3 + (100 - emotionalStyle) * 0.3 + structure * 0.4;
+	const compassScore = (100 - emotionalStyle) * 0.3 + structure * 0.5 + socialEnergy * 0.2;
+
+	const midRange = Math.abs(50 - socialEnergy) < 15 && Math.abs(50 - emotionalStyle) < 15;
+	const drifterScore = midRange ? 70 : 30;
+
+	const scores: [ArchetypeId, number][] = [
+		['spark', sparkScore],
+		['mirror', mirrorScore],
+		['anchor', anchorScore],
+		['compass', compassScore],
+		['drifter', drifterScore]
+	];
+
+	scores.sort((a, b) => b[1] - a[1]);
+	return scores[0][0];
 }
 
 function avg(...values: number[]): number {

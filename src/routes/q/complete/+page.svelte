@@ -73,13 +73,26 @@
 	function computeArchetype(answers: number[]): string {
 		const socialEnergy = (answers[0] + answers[8]) / 2;
 		const emotionalStyle = (answers[2] + answers[3] + answers[7]) / 3;
-		const structure = (answers[1] + answers[4] + answers[5] + answers[9]) / 4;
+		const structure = (answers[4] + answers[5] + answers[9]) / 3;
 
-		if (socialEnergy >= 60) return 'spark';
-		if (socialEnergy < 50 && emotionalStyle >= 55) return 'mirror';
-		if (socialEnergy < 50 && emotionalStyle < 45) return 'anchor';
-		if (emotionalStyle < 45 && structure >= 55) return 'compass';
-		return 'drifter';
+		const sparkScore = socialEnergy * 0.6 + (100 - structure) * 0.2 + emotionalStyle * 0.2;
+		const mirrorScore = (100 - socialEnergy) * 0.3 + emotionalStyle * 0.5 + (100 - structure) * 0.2;
+		const anchorScore = (100 - socialEnergy) * 0.3 + (100 - emotionalStyle) * 0.3 + structure * 0.4;
+		const compassScore = (100 - emotionalStyle) * 0.3 + structure * 0.5 + socialEnergy * 0.2;
+
+		const midRange = Math.abs(50 - socialEnergy) < 15 && Math.abs(50 - emotionalStyle) < 15;
+		const drifterScore = midRange ? 70 : 30;
+
+		const scores: [string, number][] = [
+			['spark', sparkScore],
+			['mirror', mirrorScore],
+			['anchor', anchorScore],
+			['compass', compassScore],
+			['drifter', drifterScore]
+		];
+
+		scores.sort((a, b) => b[1] - a[1]);
+		return scores[0][0];
 	}
 
 	async function handleCreator(

@@ -19,8 +19,8 @@ export interface Question {
 export const questions: Question[] = [
 	{
 		id: 1,
-		type: 'binary',
-		prompt: 'Friday night — going out or staying in?',
+		type: 'spectrum',
+		prompt: 'Friday night — what are you doing?',
 		labelLeft: 'Going out',
 		labelRight: 'Staying in',
 		scoring: 'similarity',
@@ -31,15 +31,15 @@ export const questions: Question[] = [
 	},
 	{
 		id: 2,
-		type: 'slider',
-		prompt: 'How important is alone time to you?',
-		labelLeft: 'Not at all',
-		labelRight: 'Essential',
-		scoring: 'similarity',
+		type: 'spectrum',
+		prompt: 'When someone you care about is upset, what do you do?',
+		labelLeft: 'Try to fix it',
+		labelRight: 'Just be there',
+		scoring: 'blended',
 		weight: 1.0,
 		divisive: false,
-		tensionTemplate: 'You need completely different amounts of space. That adds up.',
-		alignmentTemplate: "You need the same amount of space — that's rarer than you think."
+		tensionTemplate: "One of you wants solutions. The other just wants to be heard. That's a classic collision.",
+		alignmentTemplate: 'You show up for people the same way. They feel it.'
 	},
 	{
 		id: 3,
@@ -47,16 +47,15 @@ export const questions: Question[] = [
 		prompt: 'In an argument, are you more logical or emotional?',
 		labelLeft: 'Head',
 		labelRight: 'Heart',
-		scoring: 'complementary',
+		scoring: 'blended',
 		weight: 1.0,
 		divisive: false,
-		tensionTemplate: "You're both {direction} — nobody's playing the other side.",
-		tensionTemplateComplement: 'One of you argues to win. The other argues to be heard.',
-		alignmentTemplate: 'One of you leads with logic, the other with feeling. That\'s balance.'
+		tensionTemplate: "You argue in completely different languages. That gets exhausting fast.",
+		alignmentTemplate: "You handle conflict the same way. Fewer misunderstandings."
 	},
 	{
 		id: 4,
-		type: 'binary',
+		type: 'spectrum',
 		prompt: 'Would you rather be respected or loved?',
 		labelLeft: 'Respected',
 		labelRight: 'Loved',
@@ -72,12 +71,11 @@ export const questions: Question[] = [
 		prompt: 'How comfortable are you with silence in a conversation?',
 		labelLeft: 'Awkward',
 		labelRight: 'Peaceful',
-		scoring: 'complementary',
+		scoring: 'similarity',
 		weight: 1.0,
 		divisive: false,
-		tensionTemplate: "Neither of you is comfortable with silence. That's a lot of talking.",
-		tensionTemplateComplement: 'Silence between you two would mean completely different things.',
-		alignmentTemplate: 'One of you is calm in silence. The other needs that.'
+		tensionTemplate: "You experience silence completely differently. One relaxes, the other panics.",
+		alignmentTemplate: "You're both comfortable in the quiet. That's rare and it matters."
 	},
 	{
 		id: 6,
