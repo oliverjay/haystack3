@@ -1,0 +1,17 @@
+---
+description: Query efficiency and performance patterns
+globs: "**/*.ts,**/*.js,**/*.svelte"
+alwaysApply: false
+---
+
+# Query & Performance Rules
+
+- Avoid duplicate queries across load functions and components.
+- Keep server load functions efficient and cache-aware where appropriate.
+- Paginate large result sets.
+- Use indexes for columns used in `eq`, `in`, sorting, and foreign-key joins.
+- Call out N+1 query risks.
+- Avoid client-side overfetching.
+- Prefer optimistic UI only when failure handling is clear and safe.
+- Do not introduce polling where realtime subscriptions or explicit refresh would be better.
+- Use Supabase realtime only when the feature truly needs it.

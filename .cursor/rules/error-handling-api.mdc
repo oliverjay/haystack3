@@ -1,0 +1,21 @@
+---
+description: Error handling and API endpoint conventions
+globs: "**/*.ts,**/*.js"
+alwaysApply: false
+---
+
+# Error Handling
+
+- Fail safely and predictably.
+- For server actions and endpoints: validate input first, check auth second, perform mutation third, return structured errors.
+- Do not swallow Supabase errors silently.
+- Log server-side when useful, but never log secrets or tokens.
+- Surface actionable user-facing errors without revealing internals.
+
+# API / Endpoint Rules
+
+- If creating SvelteKit API routes: keep them server-only, validate inputs, verify auth, and return least data necessary.
+- Do not create duplicate mutation paths if form actions already fit the use case.
+- Use consistent response formats within the project.
+- Protect webhook routes with signature verification when relevant.
+- Make webhook handlers idempotent when possible.

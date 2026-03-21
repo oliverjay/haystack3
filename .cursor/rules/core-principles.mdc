@@ -1,0 +1,32 @@
+---
+description: Core principles for SvelteKit + Supabase development
+alwaysApply: true
+---
+
+# Core Principles
+
+- Prefer small, reversible changes over broad rewrites.
+- Preserve existing architecture unless explicitly asked to refactor.
+- Never invent APIs, table names, environment variables, or business rules.
+- Before changing code, inspect nearby files and follow established project patterns.
+- Keep changes consistent with existing naming, folder structure, and coding style.
+- Explain tradeoffs briefly when a change affects auth, database access, or security.
+- Make the smallest change that fully solves the task.
+- Do not rewrite unrelated files.
+
+## Preferred Workflow
+
+1. Inspect surrounding code and established patterns.
+2. Identify whether the task belongs in client, server, DB, or policies.
+3. Keep sensitive reads/writes on the server.
+4. Validate input.
+5. Enforce auth and RLS assumptions.
+6. Make the minimal code change.
+7. Note any required migration, policy, or manual verification step.
+
+## If Unsure
+
+- Be conservative.
+- Prefer server-side solutions.
+- Prefer explicit validation.
+- Prefer asking for the schema or relevant file rather than guessing.

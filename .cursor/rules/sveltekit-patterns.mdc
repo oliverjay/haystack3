@@ -1,0 +1,29 @@
+---
+description: SvelteKit routing, data loading, and mutation patterns
+globs: "**/*.svelte,**/*.ts,**/*.js"
+alwaysApply: false
+---
+
+# SvelteKit Patterns
+
+- Use SvelteKit-native patterns first:
+  - `+page.server.ts` for server-side data loading and form actions.
+  - `+page.ts` only for safe public client-side loading.
+  - `+layout.server.ts` for shared authenticated server data.
+  - `hooks.server.ts` for session/auth bootstrapping.
+- Prefer server-first data access for anything sensitive.
+- Do not fetch Supabase directly from the client unless the data is explicitly safe under RLS and intended for public/client use.
+- Keep secrets and privileged logic out of `+page.ts`, `+layout.ts`, and client components.
+- Use form actions for mutations when appropriate instead of ad hoc client fetch calls.
+- When adding endpoints, use SvelteKit request handlers with explicit validation and auth checks.
+- Avoid unnecessary stores if load functions or props are sufficient.
+- Keep page data serializable and minimal.
+
+## Svelte Components
+
+- Keep components focused and presentational where possible.
+- Move sensitive logic and data writes out of components into server files/actions/endpoints.
+- Do not put direct privileged Supabase logic into client components.
+- Use reactive statements sparingly and clearly.
+- Avoid unnecessary global stores.
+- Preserve accessibility: label inputs, use buttons for actions, keep keyboard navigation intact, do not break focus behavior.

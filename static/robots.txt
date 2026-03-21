@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /s/
+Disallow: /result/
+Disallow: /dashboard/
+Disallow: /gate
+Disallow: /q/
+
+Sitemap: https://haystack.app/sitemap.xml

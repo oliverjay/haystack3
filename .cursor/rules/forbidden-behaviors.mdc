@@ -1,0 +1,30 @@
+---
+description: Explicitly forbidden patterns and behaviors
+alwaysApply: true
+---
+
+# Forbidden Behaviors
+
+- Do not expose service-role keys in client code.
+- Do not disable or bypass RLS as a shortcut.
+- Do not trust client-side authorization checks alone.
+- Do not invent schema details.
+- Do not add broad refactors unrelated to the task.
+- Do not move sensitive logic into browser code.
+- Do not return excessive columns or sensitive fields.
+- Do not use `any` to bypass uncertainty unless explicitly unavoidable.
+- Do not make security-affecting changes silently.
+
+# Environment Variables
+
+- Before introducing a new env var, check whether an equivalent already exists.
+- Name env vars clearly and consistently.
+- Private keys must only be used in server-only contexts.
+
+# When Generating Code
+
+- Show only the files and changes needed.
+- For schema work, include SQL migrations and policy updates.
+- For auth-sensitive features, mention where the server-side check happens.
+- Use existing project utilities for Supabase server/client creation if present.
+- If project conventions are unclear, ask for the relevant file or make the most conservative assumption.

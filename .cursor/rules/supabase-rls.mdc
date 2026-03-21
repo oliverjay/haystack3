@@ -1,0 +1,25 @@
+---
+description: Supabase usage and Row Level Security rules
+globs: "**/*.ts,**/*.js,**/*.sql"
+alwaysApply: false
+---
+
+# Supabase & RLS
+
+- Assume Row Level Security (RLS) must protect all user data.
+- If adding a new table, policy, or query, verify the corresponding RLS policy exists or note that it must be created.
+- Never bypass RLS with service-role usage in normal app flows.
+- Use the service-role key only in trusted server-only admin code and never in user-request paths unless explicitly required.
+- Prefer querying through the authenticated user context for app features.
+- When writing queries, select only needed columns.
+- Avoid `select('*')` unless the table is very small and the use is justified.
+- For joins and nested selects, keep payloads narrow.
+- If a query depends on `auth.uid()`, state that clearly in comments or surrounding logic when useful.
+
+## Schema Changes
+
+When suggesting schema changes, include:
+- Migration SQL
+- RLS policies
+- Indexes for expected filters
+- Rollback awareness

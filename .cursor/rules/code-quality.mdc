@@ -1,0 +1,22 @@
+---
+description: Code quality, testing, and verification standards
+alwaysApply: true
+---
+
+# Code Quality
+
+- Preserve comments unless they are incorrect.
+- Add concise comments only where the intent is non-obvious.
+- Prefer explicit types in shared/public interfaces.
+- Reuse existing utilities before creating new ones.
+- Keep helper functions close to usage unless they are broadly reusable.
+- Avoid introducing new dependencies unless clearly justified.
+- Follow existing linting, formatting, and test patterns.
+- Do not use `any` to bypass uncertainty unless explicitly unavoidable.
+
+# Testing & Verification
+
+- After making changes, verify: types still line up, auth flow still works, RLS assumptions are still valid, and changed queries match the schema.
+- If adding a mutation, consider: success case, unauthorized case, invalid input case, and empty/error state.
+- If tests exist, follow their style.
+- If no tests exist, at minimum describe what should be manually verified.

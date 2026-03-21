@@ -1,0 +1,22 @@
+---
+description: Database schema and migration rules
+globs: "**/*.sql,**/migrations/**"
+alwaysApply: false
+---
+
+# Database & Migration Rules
+
+- Never modify production data logic casually.
+- For schema changes, prefer explicit migration files over implicit assumptions.
+- When creating tables, include:
+  - Primary keys
+  - Foreign keys
+  - Timestamps if the project uses them
+  - Sensible defaults
+  - Indexes for common lookups
+  - RLS enablement
+- When adding constraints, consider existing data compatibility.
+- If a destructive migration is requested, warn clearly.
+- Avoid writing migrations that silently drop columns, policies, or indexes without explicit instruction.
+- If adding enums, consider future extensibility and migration cost.
+- Prefer Postgres constraints for invariants that should never be violated.

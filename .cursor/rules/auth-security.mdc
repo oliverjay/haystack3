@@ -1,0 +1,29 @@
+---
+description: Authentication and security rules for server and client
+alwaysApply: true
+---
+
+# Auth Rules
+
+- Treat auth as server-verified, not client-assumed.
+- Do not trust client-provided user IDs, org IDs, role names, or ownership flags.
+- Derive identity from the authenticated Supabase session on the server.
+- For protected pages and actions: check session/user on the server, fail closed, redirect or return proper errors.
+- Do not store sensitive authorization state only in client stores.
+- If role-based access is needed, verify from trusted server data or JWT claims that are actually configured.
+- When handling OAuth or magic-link flows, preserve existing redirect logic and avoid open redirects.
+
+# Security Rules
+
+- Default to least privilege.
+- Never leak secrets into: public env vars, client code, logs, error messages, or returned JSON.
+- Use `$env/static/private` or `$env/dynamic/private` only in server-only files.
+- Use `$env/static/public` only for values safe for the browser.
+- Validate all external input: form data, URL params, query params, webhook payloads, headers when relevant.
+- Prefer Zod for request/form validation if the project already uses it.
+- Sanitize or safely render user content; do not introduce XSS risk through `{@html}` unless explicitly sanitized.
+- Do not weaken CSRF protections or auth checks for convenience.
+- Keep error messages useful but non-sensitive.
+- For file uploads, validate file type, size, and authorization before storage or access.
+- For signed URLs/storage access, use short expirations unless a longer one is explicitly required.
+- Never expose `SUPABASE_SERVICE_ROLE_KEY`, database passwords, provider secrets, or webhook secrets to the client.
