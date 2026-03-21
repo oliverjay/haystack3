@@ -222,13 +222,13 @@
 		{:else}
 			<!-- ===== WAITING STATE ===== -->
 
-			<!-- Archetype card -->
+			<!-- Archetype result -->
 			<div
 				style="
 					width: 100%;
 					background: var(--color-surface);
 					border-radius: 24px;
-					padding: 28px 24px;
+					padding: 28px 24px 24px;
 					border: 1.5px solid var(--color-border);
 					text-align: center;
 					opacity: {cardRevealed ? 1 : 0};
@@ -236,11 +236,9 @@
 					transition: opacity 500ms var(--ease-entrance), transform 500ms var(--ease-entrance);
 				"
 			>
-				<!-- Creator avatar -->
 				<div style="margin: 0 auto 12px; display: flex; justify-content: center;">
 					<Avatar emoji={data.session.creatorEmoji} avatarUrl={data.session.creatorAvatarUrl} size={64} />
 				</div>
-
 				<p style="font-size: 0.8125rem; color: var(--color-secondary); margin: 0 0 2px;">You are</p>
 				<p style="font-size: 1.25rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;">
 					{arch?.name ?? 'The Drifter'}
@@ -252,31 +250,64 @@
 				{/if}
 			</div>
 
-			<!-- Two avatars — waiting -->
+			<!-- The "what now" explanation -->
+			<div
+				style="
+					width: 100%;
+					text-align: center;
+					opacity: {cardRevealed ? 1 : 0};
+					transition: opacity 600ms var(--ease-entrance);
+					transition-delay: 200ms;
+				"
+			>
+				<p style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 6px; line-height: 1.4;">
+					Now send it to someone.
+				</p>
+				<p style="font-size: 0.875rem; color: var(--color-secondary); margin: 0; line-height: 1.5;">
+					They answer the same 10 questions — then you both get a compatibility score.
+				</p>
+			</div>
+
+			<!-- Visual: how it works -->
 			<div
 				style="
 					width: 100%;
 					display: flex;
 					align-items: center;
 					justify-content: center;
-					gap: 16px;
+					gap: 12px;
+					padding: 16px 0;
 					opacity: {cardRevealed ? 1 : 0};
 					transition: opacity 600ms var(--ease-entrance);
-					transition-delay: 150ms;
+					transition-delay: 300ms;
 				"
 			>
 				<div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-					<Avatar emoji={data.session.creatorEmoji} avatarUrl={data.session.creatorAvatarUrl} size={48} />
-					<span style="font-size: 0.6875rem; font-weight: 600; color: var(--color-primary);">{data.session.creatorName}</span>
-					<span style="font-size: 0.5625rem; color: var(--color-score-high); font-weight: 600;">Done</span>
+					<Avatar emoji={data.session.creatorEmoji} avatarUrl={data.session.creatorAvatarUrl} size={44} />
+					<span style="font-size: 0.625rem; font-weight: 600; color: var(--color-primary);">{data.session.creatorName}</span>
+					<span style="font-size: 0.5625rem; font-weight: 600; color: var(--color-score-high);">Done ✓</span>
 				</div>
 
-				<span style="font-size: 1.25rem; font-weight: 800; color: var(--color-secondary); opacity: 0.5;">?%</span>
+				<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+					<span style="font-size: 0.6875rem; font-weight: 700; color: var(--color-secondary); opacity: 0.5; letter-spacing: -0.01em;">x%</span>
+					<span style="font-size: 0.5rem; color: var(--color-secondary); opacity: 0.4;">compatible</span>
+				</div>
 
 				<div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-					<Avatar emoji="👤" size={48} borderColor="var(--color-border)" borderStyle="dashed" />
-					<span style="font-size: 0.6875rem; font-weight: 600; color: var(--color-secondary);">Someone</span>
-					<span style="font-size: 0.5625rem; color: var(--color-secondary);">Waiting</span>
+					<div style="
+						width: 44px;
+						height: 44px;
+						border-radius: 50%;
+						border: 2px dashed var(--color-border);
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-size: 1.125rem;
+						background: var(--color-surface);
+						animation: gentleBounce 2.5s ease-in-out infinite;
+					">🫵</div>
+					<span style="font-size: 0.625rem; font-weight: 600; color: var(--color-secondary);">A friend</span>
+					<span style="font-size: 0.5625rem; color: var(--color-secondary);">Their turn</span>
 				</div>
 			</div>
 
@@ -289,7 +320,7 @@
 					gap: 10px;
 					opacity: {cardRevealed ? 1 : 0};
 					transition: opacity 600ms var(--ease-entrance);
-					transition-delay: 300ms;
+					transition-delay: 400ms;
 				"
 			>
 				<button
@@ -306,7 +337,7 @@
 						cursor: pointer;
 					"
 				>
-					Invite someone
+					Send to a friend
 				</button>
 
 				<button
@@ -323,14 +354,14 @@
 						cursor: pointer;
 					"
 				>
-					{copied ? 'Copied!' : 'Copy invite link'}
+					{copied ? 'Copied!' : 'Copy link instead'}
 				</button>
 			</div>
 
 			<!-- Polling indicator -->
-			<div style="display: flex; align-items: center; gap: 6px; font-size: 0.6875rem; color: var(--color-secondary); opacity: 0.7;">
+			<div style="display: flex; align-items: center; gap: 6px; font-size: 0.6875rem; color: var(--color-secondary); opacity: 0.6;">
 				<span style="display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--color-score-high); animation: pulse 2s ease-in-out infinite;"></span>
-				Waiting for someone to finish...
+				We'll show your result here when they finish
 			</div>
 
 			<!-- Phone notification opt-in -->
@@ -345,14 +376,14 @@
 						border: 1.5px solid var(--color-border);
 						opacity: {cardRevealed ? 1 : 0};
 						transition: opacity 600ms var(--ease-entrance);
-						transition-delay: 500ms;
+						transition-delay: 600ms;
 					"
 				>
 					<p style="font-size: 0.8125rem; font-weight: 600; color: var(--color-primary); margin: 0 0 4px;">
-						Get notified when they finish
+						Don't want to wait?
 					</p>
 					<p style="font-size: 0.6875rem; color: var(--color-secondary); margin: 0 0 12px;">
-						We'll text you once — then delete your number.
+						We'll text you when your result is ready.
 					</p>
 					<div style="display: flex; gap: 8px;">
 						<input
