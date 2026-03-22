@@ -4,9 +4,14 @@
 	"description": "Think you're compatible? Prove it.",
 	"start_url": "/",
 	"display": "standalone",
-	"background_color": "#FAF8F5",
-	"theme_color": "#FAF8F5",
+	"background_color": "#FAF9F6",
+	"theme_color": "#E8563F",
 	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml"
+		},
 		{
 			"src": "/icon-192.png",
 			"sizes": "192x192",

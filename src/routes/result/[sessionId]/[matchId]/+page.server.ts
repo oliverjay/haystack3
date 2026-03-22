@@ -1,47 +1,64 @@
-import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import { supabaseAdmin } from '$lib/server/supabase';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params }) => {
-	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+export const load: PageServerLoad = async ({ params, locals: { safeGetSession } }) => {
+	const { session: authSession } = await safeGetSession();
+	if (!authSession) {
+		throw redirect(303, `/auth?redirect=${encodeURIComponent(`/result/${params.sessionId}/${params.matchId}`)}`);
+	}
 
-	const { data: match, error: matchErr } = await supabase
-		.from('matches')
-		.select(`
-			id,
-			score,
-			question_scores,
-			biggest_tension,
-			strongest_alignment,
-			pair_dynamic,
-			creator_agree,
-			responder_agree,
-			creator_response_id,
-			responder_response_id
-		`)
-		.eq('id', params.matchId)
-		.single();
+	// Fetch match and session ownership in parallel
+	const [matchResult, sessionDataResult, viewerSessionResult] = await Promise.all([
+		supabaseAdmin
+			.from('matches')
+			.select(
+				'id, score, question_scores, biggest_tension, strongest_alignment, pair_dynamic, creator_agree, responder_agree, creator_response_id, responder_response_id'
+			)
+			.eq('id', params.matchId)
+			.maybeSingle(),
+		supabaseAdmin
+			.from('sessions')
+			.select('user_id')
+			.eq('id', params.sessionId)
+			.maybeSingle(),
+		supabaseAdmin
+			.from('sessions')
+			.select('invite_code')
+			.eq('user_id', authSession.user.id)
+			.order('created_at', { ascending: false })
+			.limit(1)
+			.maybeSingle(),
+	]);
 
-	if (matchErr || !match) {
+	const match = matchResult.data;
+	if (matchResult.error || !match) {
 		throw error(404, "This result doesn't exist.");
 	}
 
-	const { data: creatorResp } = await supabase
-		.from('responses')
-		.select('responder_name, responder_emoji, archetype, completion_seconds, avatar_url')
-		.eq('id', match.creator_response_id)
-		.single();
+	// Fetch both participants in parallel (include answers for trait profile computation)
+	const [creatorRespResult, responderRespResult] = await Promise.all([
+		supabaseAdmin
+			.from('responses')
+			.select('responder_name, responder_emoji, archetype, completion_seconds, avatar_url, answers')
+			.eq('id', match.creator_response_id)
+			.maybeSingle(),
+		supabaseAdmin
+			.from('responses')
+			.select('responder_name, responder_emoji, archetype, completion_seconds, avatar_url, answers')
+			.eq('id', match.responder_response_id)
+			.maybeSingle(),
+	]);
 
-	const { data: responderResp } = await supabase
-		.from('responses')
-		.select('responder_name, responder_emoji, archetype, completion_seconds, avatar_url')
-		.eq('id', match.responder_response_id)
-		.single();
+	const creatorResp = creatorRespResult.data;
+	const responderResp = responderRespResult.data;
 
 	if (!creatorResp || !responderResp) {
 		throw error(404, 'Could not load match participants.');
 	}
+
+	const isSessionOwner = sessionDataResult.data?.user_id === authSession.user.id;
+	const viewerSession = viewerSessionResult.data;
 
 	return {
 		match: {
@@ -58,15 +75,19 @@ export const load: PageServerLoad = async ({ params }) => {
 			emoji: creatorResp.responder_emoji,
 			avatarUrl: creatorResp.avatar_url ?? null,
 			archetype: creatorResp.archetype,
-			seconds: creatorResp.completion_seconds
+			seconds: creatorResp.completion_seconds,
+			answers: (creatorResp.answers ?? []) as number[]
 		},
 		responder: {
 			name: responderResp.responder_name,
 			emoji: responderResp.responder_emoji,
 			avatarUrl: responderResp.avatar_url ?? null,
 			archetype: responderResp.archetype,
-			seconds: responderResp.completion_seconds
+			seconds: responderResp.completion_seconds,
+			answers: (responderResp.answers ?? []) as number[]
 		},
-		sessionId: params.sessionId
+		sessionId: params.sessionId,
+		isSessionOwner,
+		viewerInviteCode: viewerSession?.invite_code ?? null
 	};
 };

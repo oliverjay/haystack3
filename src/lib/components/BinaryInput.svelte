@@ -17,45 +17,58 @@
 	}
 </script>
 
-<div style="display: flex; gap: 10px;">
+<div class="binary-row">
 	<button
 		onclick={() => pick('left')}
+		class="binary-btn"
 		style="
-			flex: 1;
-			border-radius: 100px;
-			padding: 18px 14px;
-			text-align: center;
-			font-size: 1rem;
-			font-weight: 600;
-			cursor: pointer;
-			transition: all 200ms ease;
-			border: 1.5px solid {selected === 'left' ? 'var(--color-primary)' : 'var(--color-border)'};
-			background: {selected === 'left' ? 'var(--color-primary)' : 'var(--color-surface)'};
+			border-color: {selected === 'left' ? 'var(--color-accent)' : 'var(--color-border)'};
+			background: {selected === 'left' ? 'var(--color-accent)' : 'var(--color-surface)'};
 			color: {selected === 'left' ? 'white' : 'var(--color-primary)'};
-			opacity: {selected === 'right' ? 0.3 : 1};
-			box-shadow: {selected === 'left' ? '0 2px 12px rgba(26,26,26,0.12)' : 'none'};
+			opacity: {selected === 'right' ? 0.25 : 1};
+			transform: scale({selected === 'left' ? 1.03 : selected === 'right' ? 0.95 : 1});
+			box-shadow: {selected === 'left' ? '0 4px 16px rgba(232, 86, 63, 0.25)' : 'none'};
 		"
 	>
 		{labelLeft}
 	</button>
 	<button
 		onclick={() => pick('right')}
+		class="binary-btn"
 		style="
-			flex: 1;
-			border-radius: 100px;
-			padding: 18px 14px;
-			text-align: center;
-			font-size: 1rem;
-			font-weight: 600;
-			cursor: pointer;
-			transition: all 200ms ease;
-			border: 1.5px solid {selected === 'right' ? 'var(--color-primary)' : 'var(--color-border)'};
-			background: {selected === 'right' ? 'var(--color-primary)' : 'var(--color-surface)'};
+			border-color: {selected === 'right' ? 'var(--color-accent)' : 'var(--color-border)'};
+			background: {selected === 'right' ? 'var(--color-accent)' : 'var(--color-surface)'};
 			color: {selected === 'right' ? 'white' : 'var(--color-primary)'};
-			opacity: {selected === 'left' ? 0.3 : 1};
-			box-shadow: {selected === 'right' ? '0 2px 12px rgba(26,26,26,0.12)' : 'none'};
+			opacity: {selected === 'left' ? 0.25 : 1};
+			transform: scale({selected === 'right' ? 1.03 : selected === 'left' ? 0.95 : 1});
+			box-shadow: {selected === 'right' ? '0 4px 16px rgba(232, 86, 63, 0.25)' : 'none'};
 		"
 	>
 		{labelRight}
 	</button>
 </div>
+
+<style>
+	.binary-row {
+		display: flex;
+		gap: 10px;
+	}
+	.binary-btn {
+		flex: 1;
+		border-radius: 100px;
+		padding: 18px 14px;
+		text-align: center;
+		font-size: 1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 250ms var(--ease-spring);
+		border: 1.5px solid;
+		font-family: inherit;
+	}
+	@media (min-height: 700px) {
+		.binary-btn {
+			padding: 22px 16px;
+			font-size: 1.0625rem;
+		}
+	}
+</style>

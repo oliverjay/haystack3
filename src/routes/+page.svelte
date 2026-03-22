@@ -1,22 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { getMySessionId, setMySessionId } from '$lib/device';
-	import { supabase } from '$lib/supabase';
+	import Logo from '$lib/components/Logo.svelte';
 
+	let ready = $state(false);
 	let mounted = $state(false);
-	let checking = $state(true);
-
-	let showRecovery = $state(false);
-	let recoveryPhone = $state('');
-	let recoveryLoading = $state(false);
-	let recoveryError = $state('');
 
 	const examples = [
-		{ emoji: '🧑‍🤝‍🧑', label: 'Your friend', score: 73, color: 'var(--color-score-high)' },
+		{ emoji: '🧑‍🤝‍🧑', label: 'Best friend', score: 73, color: 'var(--color-score-high)' },
 		{ emoji: '💕', label: 'Your crush', score: 41, color: 'var(--color-score-mid)' },
-		{ emoji: '👨‍👩‍👧', label: 'Your sibling', score: 88, color: 'var(--color-score-high)' },
-		{ emoji: '💼', label: 'Co-worker', score: 29, color: 'var(--color-score-low)' },
+		{ emoji: '👨‍👩‍👧', label: 'Sibling', score: 88, color: 'var(--color-score-high)' },
+		{ emoji: '🫠', label: 'Your ex', score: 29, color: 'var(--color-score-low)' },
 	];
 
 	let activeExample = $state(0);
@@ -30,20 +24,15 @@
 
 	$effect(() => {
 		if (!browser) return;
-		checkReturningUser();
-	});
-
-	async function checkReturningUser() {
-		const sessionId = getMySessionId();
-		if (!sessionId) {
-			showLanding();
+		if (!localStorage.getItem('haystack_intro_seen')) {
+			goto('/intro', { replaceState: true });
 			return;
 		}
-		goto(`/dashboard/${sessionId}`, { replaceState: true });
-	}
+		ready = true;
+		showLanding();
+	});
 
 	function showLanding() {
-		checking = false;
 		mounted = true;
 		liveCount = 14 + Math.floor(Math.random() * 8);
 		startLiveCounter();
@@ -94,35 +83,9 @@
 		if (liveTimer) clearInterval(liveTimer);
 		goto('/q');
 	}
-
-	async function recoverSession() {
-		const cleaned = recoveryPhone.replace(/\s/g, '');
-		if (!cleaned || cleaned.length < 7) return;
-		recoveryLoading = true;
-		recoveryError = '';
-		const { data: session } = await supabase
-			.from('sessions')
-			.select('id')
-			.eq('creator_phone', cleaned)
-			.order('created_at', { ascending: false })
-			.limit(1)
-			.single();
-		if (session) {
-			setMySessionId(session.id);
-			recoveryLoading = false;
-			goto(`/dashboard/${session.id}`);
-		} else {
-			recoveryError = 'No matches found for that number.';
-			recoveryLoading = false;
-		}
-	}
 </script>
 
-{#if checking}
-	<main style="display: flex; min-height: 100dvh; align-items: center; justify-content: center; background: var(--color-cream);">
-		<p style="font-size: 0.875rem; color: var(--color-secondary); opacity: 0.5;">Loading...</p>
-	</main>
-{:else}
+{#if ready}
 <main
 	style="
 		display: flex;
@@ -132,23 +95,22 @@
 		justify-content: center;
 		padding: 24px 20px;
 		background: var(--color-cream);
+		position: relative;
+		overflow: hidden;
 	"
 >
-	<div style="display: flex; flex-direction: column; align-items: center; gap: 32px; text-align: center; max-width: 340px; width: 100%;">
+	<!-- Decorative blobs -->
+	<div class="deco-blob" style="width: 300px; height: 300px; background: var(--color-accent); top: -80px; right: -100px;"></div>
+	<div class="deco-blob" style="width: 250px; height: 250px; background: #7C4DFF; bottom: -60px; left: -80px;"></div>
+
+	<div style="display: flex; flex-direction: column; align-items: center; gap: 28px; text-align: center; max-width: 340px; width: 100%; position: relative; z-index: 1;">
 
 		<!-- Logo -->
-		<h1
+		<div
 			class={mounted ? 'landing-in' : ''}
-			style="
-				font-size: 1.5rem;
-				font-weight: 800;
-				letter-spacing: -0.02em;
-				color: var(--color-primary);
-				margin: 0;
-			"
 		>
-			Haystack
-		</h1>
+			<Logo size="lg" />
+		</div>
 
 		<!-- Cycling avatar hero -->
 		<div
@@ -170,11 +132,12 @@
 					height: 72px;
 					border-radius: 50%;
 					background: var(--color-surface);
-					border: 2px solid var(--color-highlight);
+					border: 2.5px solid var(--color-accent);
 					display: flex;
 					align-items: center;
 					justify-content: center;
 					font-size: 2rem;
+					box-shadow: 0 4px 20px rgba(232, 86, 63, 0.15);
 				">🫵</div>
 				<span style="font-size: 0.8125rem; font-weight: 600; color: var(--color-primary);">You</span>
 			</div>
@@ -190,8 +153,8 @@
 				transition: opacity 300ms ease;
 			">
 				<span style="
-					font-size: 1.75rem;
-					font-weight: 800;
+					font-family: var(--font-display);
+					font-size: 2rem;
 					color: {examples[activeExample].color};
 					letter-spacing: -0.03em;
 					line-height: 1;
@@ -233,19 +196,42 @@
 			</div>
 		</div>
 
-		<!-- Tagline -->
+		<!-- Tagline — serif for the emotional word -->
 		<p
 			class={mounted ? 'landing-in' : ''}
 			style="
 				font-size: 1.125rem;
-				line-height: 1.5;
+				line-height: 1.55;
 				color: var(--color-primary);
 				margin: 0;
 				font-weight: 500;
 				animation-delay: 200ms;
 			"
 		>
-			Both answer 10 questions.<br />See how you <span style="background: var(--color-highlight); color: white; padding: 2px 8px; border-radius: 6px; font-weight: 600;">actually</span> compare.
+			Research-informed. 15 questions. 90 seconds.<br />Find out if you <span style="
+				font-family: var(--font-display);
+				font-style: italic;
+				font-size: 1.3rem;
+				background: linear-gradient(135deg, var(--color-accent) 0%, #D44A35 100%);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			">actually</span> get each other.
+		</p>
+
+		<!-- Credibility line -->
+		<p
+			class={mounted ? 'landing-in' : ''}
+			style="
+				font-size: 0.6875rem;
+				color: var(--color-secondary);
+				margin: -16px 0 0;
+				letter-spacing: 0.02em;
+				opacity: 0.7;
+				animation-delay: 250ms;
+			"
+		>
+			Grounded in the Big Five, Attachment Theory & the Love Languages
 		</p>
 
 		<!-- CTA -->
@@ -256,7 +242,7 @@
 				width: 100%;
 				max-width: 280px;
 				border-radius: 100px;
-				background-color: var(--color-accent);
+				background: linear-gradient(135deg, var(--color-accent) 0%, #D44A35 100%);
 				padding: 16px 24px;
 				font-size: 1.125rem;
 				font-weight: 700;
@@ -264,9 +250,15 @@
 				border: none;
 				cursor: pointer;
 				animation-delay: 350ms;
+				box-shadow: 0 4px 20px rgba(232, 86, 63, 0.3);
+				transition: transform 150ms var(--ease-spring), box-shadow 150ms ease;
 			"
+			onmousedown={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+			onmouseup={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+			ontouchstart={(e) => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+			ontouchend={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
 		>
-			Try it — takes 60 seconds
+			Start — it's 60 seconds
 		</button>
 
 		<div
@@ -290,84 +282,34 @@
 				background: var(--color-score-high);
 				animation: pulse 2s ease-in-out infinite;
 			"></span>
-			<span><strong style="font-weight: 600; color: var(--color-primary);">{liveCount}</strong> people testing right now</span>
+			<span><strong style="font-weight: 600; color: var(--color-primary);">{liveCount}</strong> people comparing right now</span>
 		</div>
 
-		{#if !showRecovery}
-			<button
-				onclick={() => showRecovery = true}
-				class={mounted ? 'landing-in' : ''}
-				style="
-					font-size: 0.6875rem;
-					color: var(--color-secondary);
-					background: none;
-					border: none;
-					cursor: pointer;
-					text-decoration: underline;
-					text-underline-offset: 2px;
-					font-family: inherit;
-					margin-top: 8px;
-					animation-delay: 600ms;
-				"
-			>
-				Already played? Find your results
-			</button>
-		{:else}
-			<div
-				style="
-					width: 100%;
-					max-width: 280px;
-					margin-top: 12px;
-					animation: fadeIn 300ms ease;
-				"
-			>
-				<p style="font-size: 0.6875rem; color: var(--color-secondary); margin: 0 0 8px; text-align: center;">
-					Enter the phone number you used before
-				</p>
-				<div style="display: flex; gap: 8px;">
-					<input
-						type="tel"
-						bind:value={recoveryPhone}
-						placeholder="Your phone number"
-						onkeydown={(e) => e.key === 'Enter' && recoverSession()}
-						style="
-							flex: 1;
-							border-radius: 100px;
-							border: 1.5px solid var(--color-border);
-							padding: 10px 14px;
-							font-size: 0.8125rem;
-							background: var(--color-input-bg);
-							color: var(--color-primary);
-							outline: none;
-							font-family: inherit;
-						"
-					/>
-					<button
-						onclick={recoverSession}
-						disabled={recoveryLoading}
-						style="
-							border-radius: 100px;
-							background: var(--color-primary);
-							padding: 10px 14px;
-							font-size: 0.75rem;
-							font-weight: 700;
-							color: white;
-							border: none;
-							cursor: pointer;
-							white-space: nowrap;
-							opacity: {recoveryLoading ? 0.6 : 1};
-						"
-					>
-						Find
-					</button>
-				</div>
-				{#if recoveryError}
-					<p style="font-size: 0.6875rem; color: var(--color-score-low); margin: 6px 0 0; text-align: center;">
-						{recoveryError}
-					</p>
-				{/if}
-			</div>
-		{/if}
+		<a
+			href="/auth?redirect=/"
+			class={mounted ? 'landing-in' : ''}
+			style="
+				font-size: 0.75rem;
+				color: var(--color-secondary);
+				text-decoration: underline;
+				text-underline-offset: 2px;
+				animation-delay: 600ms;
+				opacity: 0.7;
+			"
+		>Already took it? Get your results back</a>
+
+		<a
+			href="/archetypes"
+			class={mounted ? 'landing-in' : ''}
+			style="
+				font-size: 0.75rem;
+				color: var(--color-secondary);
+				text-decoration: underline;
+				text-underline-offset: 2px;
+				animation-delay: 700ms;
+				opacity: 0.7;
+			"
+		>Explore the 10 archetypes</a>
 	</div>
 </main>
 {/if}

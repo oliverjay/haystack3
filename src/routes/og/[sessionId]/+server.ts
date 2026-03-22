@@ -1,11 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { supabaseAdmin } from '$lib/server/supabase';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params, url }) => {
-	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
-
-	const { data: session } = await supabase
+	const { data: session } = await supabaseAdmin
 		.from('sessions')
 		.select('creator_name, creator_emoji')
 		.eq('id', params.sessionId)
@@ -16,7 +13,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	let responderName: string | null = null;
 
 	if (matchId) {
-		const { data: match } = await supabase
+		const { data: match } = await supabaseAdmin
 			.from('matches')
 			.select('score, responder_response_id')
 			.eq('id', matchId)
@@ -24,7 +21,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 
 		if (match) {
 			score = match.score;
-			const { data: resp } = await supabase
+			const { data: resp } = await supabaseAdmin
 				.from('responses')
 				.select('responder_name')
 				.eq('id', match.responder_response_id)
@@ -42,7 +39,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		: `${name} ${emoji}`;
 	const subtitle = isPostResult
 		? 'Think you can beat that?'
-		: 'took 10 questions. Now it\'s your turn.';
+		: 'took 15 questions. Now it\'s your turn.';
 	const scoreText = isPostResult ? `${score}%` : '?%';
 	const scoreColor = isPostResult
 		? score! >= 75 ? '#34B68E' : score! >= 45 ? '#F0A848' : '#E05A5A'

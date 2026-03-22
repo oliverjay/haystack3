@@ -50,7 +50,10 @@ create table if not exists devices (
   created_at timestamptz not null default now()
 );
 
--- Phone number for match notifications (optional)
+-- Email for session recovery and notifications
+alter table sessions add column if not exists creator_email text;
+
+-- Legacy: phone number (deprecated, use email instead)
 alter table sessions add column if not exists creator_phone text;
 
 -- Custom avatar image (base64 data URL, optional)
@@ -63,6 +66,7 @@ create index if not exists idx_responses_device on responses(device_id);
 create index if not exists idx_matches_session on matches(session_id);
 create index if not exists idx_matches_creator_response on matches(creator_response_id);
 create index if not exists idx_matches_responder_response on matches(responder_response_id);
+create index if not exists idx_sessions_creator_email on sessions(creator_email);
 
 -- RLS Policies
 -- Sessions: anyone can read (needed for invite landing), insert with device_id

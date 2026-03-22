@@ -23,12 +23,20 @@
 	}
 </script>
 
-<div style="display: flex; flex-direction: column; gap: 10px;">
-	<div style="display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 500;">
-		<span style="color: {selectedPos !== null && selectedPos <= 35 ? 'var(--color-primary)' : 'var(--color-secondary)'}; transition: color 200ms ease;">
+<div class="spectrum-wrap">
+	<div class="spectrum-labels">
+		<span style="
+			color: {selectedPos !== null && selectedPos <= 35 ? 'var(--color-accent)' : 'var(--color-secondary)'};
+			font-weight: {selectedPos !== null && selectedPos <= 35 ? '700' : '500'};
+			transition: color 200ms ease, font-weight 200ms ease;
+		">
 			{labelLeft}
 		</span>
-		<span style="color: {selectedPos !== null && selectedPos >= 65 ? 'var(--color-primary)' : 'var(--color-secondary)'}; transition: color 200ms ease;">
+		<span style="
+			color: {selectedPos !== null && selectedPos >= 65 ? 'var(--color-accent)' : 'var(--color-secondary)'};
+			font-weight: {selectedPos !== null && selectedPos >= 65 ? '700' : '500'};
+			transition: color 200ms ease, font-weight 200ms ease;
+		">
 			{labelRight}
 		</span>
 	</div>
@@ -42,49 +50,77 @@
 		aria-valuemax={100}
 		aria-label="Select a position between {labelLeft} and {labelRight}"
 		onclick={handleClick}
-		style="
-			position: relative;
-			height: 56px;
-			cursor: pointer;
-			border-radius: 100px;
-			background: var(--color-surface);
-			border: 1.5px solid var(--color-border);
-			width: 100%;
-			padding: 0;
-			overflow: hidden;
-		"
+		class="spectrum-bar"
 	>
-		<!-- Center tick -->
 		<div style="position: absolute; left: 50%; top: 50%; width: 1px; height: 18px; transform: translate(-50%, -50%); background: var(--color-border);"></div>
 
 		{#if selectedPos === null}
-			<div style="
-				position: absolute;
-				inset: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				font-size: 0.8125rem;
-				color: var(--color-secondary);
-				pointer-events: none;
-			">
+			<div class="spectrum-hint">
 				Tap where you land
 			</div>
 		{/if}
 
 		{#if selectedPos !== null}
-			<div style="
-				position: absolute;
-				top: 50%;
-				left: {selectedPos}%;
-				width: 30px;
-				height: 30px;
-				transform: translate(-50%, -50%);
-				border-radius: 50%;
-				background: var(--color-primary);
-				box-shadow: 0 2px 10px rgba(26,26,26,0.18);
-				transition: left 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
-			"></div>
+			<div class="spectrum-thumb" style="left: {selectedPos}%;"></div>
 		{/if}
 	</button>
 </div>
+
+<style>
+	.spectrum-wrap {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.spectrum-labels {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+	.spectrum-bar {
+		position: relative;
+		height: 56px;
+		cursor: pointer;
+		border-radius: 100px;
+		background: var(--color-surface);
+		border: 1.5px solid var(--color-border);
+		width: 100%;
+		padding: 0;
+		overflow: hidden;
+		transition: border-color 200ms ease;
+	}
+	.spectrum-hint {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.8125rem;
+		color: var(--color-secondary);
+		pointer-events: none;
+	}
+	.spectrum-thumb {
+		position: absolute;
+		top: 50%;
+		width: 32px;
+		height: 32px;
+		transform: translate(-50%, -50%);
+		border-radius: 50%;
+		background: var(--color-accent);
+		box-shadow: 0 2px 12px rgba(232, 86, 63, 0.3);
+		transition: left 200ms var(--ease-spring);
+	}
+	@media (min-height: 700px) {
+		.spectrum-labels {
+			font-size: 0.9375rem;
+		}
+		.spectrum-bar {
+			height: 64px;
+		}
+		.spectrum-thumb {
+			width: 36px;
+			height: 36px;
+		}
+	}
+</style>

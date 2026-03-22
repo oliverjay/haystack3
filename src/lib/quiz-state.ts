@@ -17,7 +17,7 @@ function defaultState(isCreator: boolean): QuizState {
 	return {
 		name: '',
 		emoji: '',
-		answers: Array(10).fill(null),
+		answers: Array(15).fill(null),
 		currentQuestion: 0,
 		isCreator
 	};
@@ -33,10 +33,10 @@ export function loadQuizState(sessionId?: string, isCreator = true): QuizState {
 		const raw = localStorage.getItem(storageKey(sessionId));
 		if (raw) {
 			const parsed = JSON.parse(raw) as QuizState;
-			if (!Array.isArray(parsed.answers) || parsed.answers.length !== 10) {
+			if (!Array.isArray(parsed.answers) || parsed.answers.length !== 15) {
 				return defaultState(isCreator);
 			}
-			parsed.currentQuestion = Math.max(0, Math.min(9, parsed.currentQuestion ?? 0));
+			parsed.currentQuestion = Math.max(0, Math.min(14, parsed.currentQuestion ?? 0));
 			parsed.name = parsed.name ?? '';
 			parsed.emoji = parsed.emoji ?? '';
 			parsed.isCreator = isCreator;

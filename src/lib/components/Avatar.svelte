@@ -12,7 +12,7 @@
 		emoji,
 		avatarUrl = null,
 		size = 52,
-		borderColor = 'var(--color-highlight)',
+		borderColor = 'var(--color-accent)',
 		borderStyle = 'solid',
 		onClick = null
 	}: Props = $props();

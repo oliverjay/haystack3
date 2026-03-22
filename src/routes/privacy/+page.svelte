@@ -2,49 +2,49 @@
 	<title>Privacy Policy — Haystack</title>
 </svelte:head>
 
-<main class="min-h-dvh min-h-[100vh] bg-cream px-5 py-16">
-	<div class="mx-auto max-w-lg">
-		<h1 class="mb-8 text-3xl font-extrabold">Privacy Policy</h1>
+<main style="min-height: 100dvh; background: var(--color-cream); padding: 64px 20px;">
+	<div style="max-width: 520px; margin: 0 auto;">
+		<h1 style="font-size: 1.875rem; font-weight: 800; margin: 0 0 32px;">Privacy Policy</h1>
 
-		<div class="space-y-6 text-base leading-relaxed text-secondary">
+		<div style="display: flex; flex-direction: column; gap: 24px; font-size: 1rem; line-height: 1.65; color: var(--color-secondary);">
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">What we collect</h2>
-				<p>Your first name, an emoji you choose, your quiz answers, and an anonymous device ID (a random identifier stored on your device). If you pay to unlock results, Stripe processes your payment — we never see your card details.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">What we collect</h2>
+				<p style="margin: 0;">Your first name, an emoji you choose, your quiz answers, and your email address for account access. If you pay to unlock results, Stripe processes your payment — we never see your card details.</p>
 			</section>
 
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">What we don't collect</h2>
-				<p>Last names, email addresses, phone numbers, contacts, location data, or tracking cookies. We don't use any advertising or analytics cookies.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">What we don't collect</h2>
+				<p style="margin: 0;">Last names, phone numbers, contacts, location data, or tracking cookies. We don't use any advertising or analytics cookies.</p>
 			</section>
 
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">How your data is used</h2>
-				<p>To compute compatibility scores and show you results. That's it. We don't sell data, don't run ads, and don't build profiles.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">How your data is used</h2>
+				<p style="margin: 0;">To compute compatibility scores and show you results. That's it. We don't sell data, don't run ads, and don't build profiles.</p>
 			</section>
 
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">Third parties</h2>
-				<p>Supabase (database), Vercel (hosting), and Stripe (payments). Each has their own privacy policy.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Third parties</h2>
+				<p style="margin: 0;">Supabase (database & auth), Vercel (hosting), and Stripe (payments). Each has their own privacy policy.</p>
 			</section>
 
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">Data storage</h2>
-				<p>Quiz data is stored as long as the service is active. We use localStorage on your device to save quiz progress and your anonymous ID.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Data storage</h2>
+				<p style="margin: 0;">Quiz data is stored as long as the service is active. We use localStorage on your device to save quiz progress.</p>
 			</section>
 
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">Delete your data</h2>
-				<p>Email us and we'll remove everything associated with your device ID. Clearing your browser storage removes all local data immediately.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Delete your data</h2>
+				<p style="margin: 0;">Email us and we'll remove everything associated with your account. Clearing your browser storage removes all local data immediately.</p>
 			</section>
 
 			<section>
-				<h2 class="mb-2 text-lg font-bold text-primary">Results are for fun</h2>
-				<p>Haystack is entertainment, not a psychological assessment. Don't make life decisions based on a compatibility percentage.</p>
+				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Results are for fun</h2>
+				<p style="margin: 0;">Haystack is entertainment, not a psychological assessment. Don't make life decisions based on a compatibility percentage.</p>
 			</section>
 		</div>
 
-		<div class="mt-12">
-			<a href="/" class="text-accent underline underline-offset-2">← Back to Haystack</a>
+		<div style="margin-top: 48px;">
+			<a href="/" style="color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px;">← Back to Haystack</a>
 		</div>
 	</div>
 </main>

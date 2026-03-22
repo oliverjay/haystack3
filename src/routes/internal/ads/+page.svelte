@@ -42,7 +42,7 @@
 					score: 41, scoreColor: 'var(--color-score-mid)', tier: 'Different wavelengths',
 					tensionText: '"One of you needs to be respected first. The other just wants to feel loved."',
 					ctaLine: 'Find out before you<br/>say something stupid.',
-					ctaSub: '10 questions. Send the link. Know where you stand.'
+					ctaSub: '15 questions. Send the link. Know where you stand.'
 				},
 				{
 					id: 'crush-2', name: 'Friday night',
@@ -55,7 +55,7 @@
 					score: 38, scoreColor: 'var(--color-score-mid)', tier: 'Different wavelengths',
 					tensionText: '"One of you is restless on a Friday night. The other is already in bed."',
 					ctaLine: 'Stop guessing.<br/>Get the number.',
-					ctaSub: '10 questions. 60 seconds. No sign-up.'
+					ctaSub: '15 questions. 60 seconds. No sign-up.'
 				},
 				{
 					id: 'crush-3', name: 'The ex question',
@@ -87,7 +87,7 @@
 					score: 73, scoreColor: 'var(--color-score-high)', tier: "More alike than you'd think",
 					tensionText: '"One of you needs to be respected first. The other just wants to feel loved."',
 					ctaLine: 'Find out how you<br/>actually compare.',
-					ctaSub: '10 questions. Send the link. Get your score.'
+					ctaSub: '15 questions. Send the link. Get your score.'
 				},
 				{
 					id: 'bf-2', name: 'The phone question',
@@ -113,7 +113,7 @@
 					score: 58, scoreColor: 'var(--color-score-mid)', tier: "You'd have interesting arguments",
 					tensionText: '"You experience silence completely differently. One relaxes, the other panics."',
 					ctaLine: 'How well do you<br/>really know them?',
-					ctaSub: '10 questions. The answer might sting.'
+					ctaSub: '15 questions. The answer might sting.'
 				},
 				{
 					id: 'bf-4', name: 'Honesty test',
@@ -171,7 +171,7 @@
 					score: 76, scoreColor: 'var(--color-score-high)', tier: 'You just get each other',
 					tensionText: "\"One of you wants solutions. The other just wants to be heard. That's a classic collision.\"",
 					ctaLine: 'Same house.<br/>Different wiring.',
-					ctaSub: '10 questions. Settle it once and for all.'
+					ctaSub: '15 questions. Settle it once and for all.'
 				}
 			]
 		},
@@ -203,7 +203,7 @@
 					score: 44, scoreColor: 'var(--color-score-mid)', tier: 'Different wavelengths',
 					tensionText: '"You argue in completely different languages. That gets exhausting fast."',
 					ctaLine: 'Find out why<br/>meetings feel weird.',
-					ctaSub: '10 questions. Finally understand your co-worker.'
+					ctaSub: '15 questions. Finally understand your co-worker.'
 				},
 				{
 					id: 'cw-3', name: 'The planner vs improviser',
