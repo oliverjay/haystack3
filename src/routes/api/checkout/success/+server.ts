@@ -1,5 +1,5 @@
 import { redirect, error } from '@sveltejs/kit';
-import { stripe } from '$lib/server/stripe';
+import { getStripe } from '$lib/server/stripe';
 import { supabaseAdmin } from '$lib/server/supabase';
 import type { RequestHandler } from './$types';
 
@@ -7,6 +7,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const sessionId = url.searchParams.get('session_id');
 	if (!sessionId) throw error(400, 'Missing session_id');
 
+	const stripe = getStripe();
 	const session = await stripe.checkout.sessions.retrieve(sessionId);
 
 	if (session.payment_status !== 'paid') {
