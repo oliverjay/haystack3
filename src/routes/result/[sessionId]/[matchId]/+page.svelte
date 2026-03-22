@@ -11,8 +11,9 @@
 		type LoveLanguageId
 	} from '$lib/questions';
 	import { computeTraitProfile, getScoreColor, type TraitProfile, type ComponentScores } from '$lib/scoring';
-	import { markMatchRevealed } from '$lib/device';
+	import { markMatchRevealed, getRevealedMatches } from '$lib/device';
 	import Avatar from '$lib/components/Avatar.svelte';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 	import Logo from '$lib/components/Logo.svelte';
 
 	let { data } = $props();
@@ -143,44 +144,33 @@
 		{ key: 'repairFit', label: 'Repair Ability', weight: '10%' }
 	];
 
-	let shareLabel = $state('Share this result');
-
-	async function shareResult() {
-		const shareText = `We got ${data.match.score}% on Haystack — think you can beat it? 👀`;
-		if (browser && navigator.share) {
-			try {
-				await navigator.share({ text: shareText, url: shareUrl });
-				return;
-			} catch { /* fall through */ }
-		}
-		try {
-			await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-		} catch {
-			const input = document.createElement('input');
-			input.value = `${shareText}\n${shareUrl}`;
-			document.body.appendChild(input);
-			input.select();
-			document.execCommand('copy');
-			document.body.removeChild(input);
-		}
-		shareLabel = 'Copied!';
-		setTimeout(() => (shareLabel = 'Share this result'), 2000);
+	function getTierShareCopy(score: number): string {
+		if (score >= 90) return `We got ${score}% on Haystack — scarily in sync 🔮`;
+		if (score >= 75) return `We got ${score}% on Haystack — easy momentum. Think you can beat it? 👀`;
+		if (score >= 60) return `We got ${score}% on Haystack — solid potential. Think you'd score higher? 👀`;
+		if (score >= 45) return `We got ${score}% — interesting differences. Think you'd do better? 👀`;
+		if (score >= 30) return `We got ${score}% — different wavelengths. Can you beat it? 👀`;
+		return `We got ${score}% on Haystack — more different than we thought. Can you do better? 👀`;
 	}
+
+	const tierShareText = getTierShareCopy(data.match.score);
+	const challengeShareText = `${tierShareText}\n`;
 
 	let resultInited = false;
 
 	$effect(() => {
 		if (!browser || resultInited) return;
 		resultInited = true;
-		markMatchRevealed(data.match.id);
+
 		if (data.viewerInviteCode) {
 			shareUrl = `${window.location.origin}/s/${data.viewerInviteCode}`;
 		}
-		startRevealFlow();
-	});
 
-	function startRevealFlow() {
-		if (skipReveal) {
+		// Check before marking so first visit still gets the animation
+		const alreadySeen = skipReveal || getRevealedMatches().has(data.match.id);
+		markMatchRevealed(data.match.id);
+
+		if (alreadySeen) {
 			phase = 'result';
 			scoreCount = data.match.score;
 			resultVisible = true;
@@ -189,13 +179,12 @@
 			tensionVisible = true;
 			alignmentVisible = true;
 			detailVisible = true;
-			return;
+		} else {
+			phase = 'interstitial';
+			fullText = tensionLines[Math.floor(Math.random() * tensionLines.length)];
+			typeText();
 		}
-
-		phase = 'interstitial';
-		fullText = tensionLines[Math.floor(Math.random() * tensionLines.length)];
-		typeText();
-	}
+	});
 
 	function typeText() {
 		let i = 0;
@@ -340,16 +329,18 @@
 				transition: opacity 300ms ease;
 			"
 		>
-			<!-- Logo -->
+			<!-- Logo — links to dashboard -->
 			<div style="display: flex; justify-content: center; margin-bottom: 28px;">
-				<Logo size="sm" />
+				<a href={data.isSessionOwner ? `/dashboard/${data.sessionId}` : '/'} style="text-decoration: none;">
+					<Logo size="sm" />
+				</a>
 			</div>
 
 			<!-- Score hero card -->
 			<div style="
 				background: var(--color-surface);
 				border-radius: 28px;
-				padding: 36px 24px 28px;
+				padding: 32px 20px 24px;
 				text-align: center;
 				border: 1.5px solid var(--color-border);
 				margin-bottom: 16px;
@@ -363,44 +354,54 @@
 					pointer-events: none;
 				"></div>
 
-				<div style="display: flex; justify-content: center; margin-bottom: 16px; position: relative; z-index: 1;">
-					<div style="position: relative; z-index: 2;">
-						<Avatar emoji={data.creator.emoji} avatarUrl={data.creator.avatarUrl} size={56} borderColor="var(--color-border)" />
-					</div>
-					<div style="position: relative; z-index: 1; margin-left: -14px;">
-						<Avatar emoji={data.responder.emoji} avatarUrl={data.responder.avatarUrl} size={56} borderColor="var(--color-border)" />
-					</div>
-				</div>
-
-				<div style="position: relative; z-index: 1; margin-bottom: 4px;">
-					<p style="font-size: 0.875rem; margin: 0; line-height: 1.5; color: var(--color-primary);">
-						<span style="font-weight: 600;">{data.creator.name}</span>
-						{#if creatorArch}
-							<span style="color: {creatorArchColor}; font-weight: 600; font-size: 0.75rem;"> · {creatorArch.name}</span>
-						{/if}
-					</p>
-					<p style="font-size: 0.875rem; margin: 0; line-height: 1.5; color: var(--color-primary);">
-						<span style="font-weight: 600;">{data.responder.name}</span>
-						{#if responderArch}
-							<span style="color: {responderArchColor}; font-weight: 600; font-size: 0.75rem;"> · {responderArch.name}</span>
-						{/if}
-					</p>
-				</div>
-
+				<!-- Two-person layout -->
 				<div style="
-					margin: 16px 0 8px;
-					color: {scoreColor};
+					display: grid;
+					grid-template-columns: 1fr auto 1fr;
+					align-items: center;
+					gap: 12px;
+					margin-bottom: 20px;
 					position: relative;
 					z-index: 1;
-					animation: {scoreRevealed ? 'scoreReveal 700ms var(--ease-spring) both' : 'none'};
 				">
-					<span class={data.match.score >= 75 ? 'score-glow' : ''} style="
-						font-family: var(--font-display);
-						font-size: 5.5rem;
-						line-height: 1;
-						letter-spacing: -0.04em;
-						font-variant-numeric: tabular-nums;
-					">{scoreCount}%</span>
+					<!-- Creator -->
+					<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+						<Avatar emoji={data.creator.emoji} avatarUrl={data.creator.avatarUrl} size={52} borderColor="var(--color-border)" />
+						<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+							<span style="font-size: 0.8125rem; font-weight: 700; color: var(--color-primary); line-height: 1.2;">{data.creator.name}</span>
+							{#if creatorArch}
+								<span style="font-size: 0.6875rem; font-weight: 600; color: {creatorArchColor}; line-height: 1.2;">{creatorArch.name}</span>
+							{/if}
+						</div>
+					</div>
+
+					<!-- Score center -->
+					<div style="
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						color: {scoreColor};
+						animation: {scoreRevealed ? 'scoreReveal 700ms var(--ease-spring) both' : 'none'};
+					">
+						<span class={data.match.score >= 75 ? 'score-glow' : ''} style="
+							font-family: var(--font-display);
+							font-size: 3.5rem;
+							line-height: 1;
+							letter-spacing: -0.04em;
+							font-variant-numeric: tabular-nums;
+						">{scoreCount}%</span>
+					</div>
+
+					<!-- Responder -->
+					<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+						<Avatar emoji={data.responder.emoji} avatarUrl={data.responder.avatarUrl} size={52} borderColor="var(--color-border)" />
+						<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+							<span style="font-size: 0.8125rem; font-weight: 700; color: var(--color-primary); line-height: 1.2;">{data.responder.name}</span>
+							{#if responderArch}
+								<span style="font-size: 0.6875rem; font-weight: 600; color: {responderArchColor}; line-height: 1.2;">{responderArch.name}</span>
+							{/if}
+						</div>
+					</div>
 				</div>
 
 				<p
@@ -433,7 +434,49 @@
 					{data.match.pairDynamic}
 				</p>
 
-				<p class="result-watermark" style="margin: 16px 0 0; position: relative; z-index: 1;">haystack</p>
+				<!-- Tension line elevated into hero card -->
+				<div
+					style="
+						margin: 16px 0 0;
+						padding: 12px 16px;
+						background: rgba(0,0,0,0.03);
+						border-radius: 14px;
+						position: relative;
+						z-index: 1;
+						opacity: {tensionVisible ? 1 : 0};
+						transform: translateY({tensionVisible ? '0' : '6px'});
+						transition: opacity 400ms var(--ease-entrance), transform 400ms var(--ease-entrance);
+					"
+				>
+					<p style="font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-score-low); margin: 0 0 4px;">⚡ Biggest tension</p>
+					<p style="font-family: var(--font-display); font-size: 0.9375rem; font-style: italic; color: var(--color-primary); margin: 0; line-height: 1.4;">
+						"{data.match.biggestTension}"
+					</p>
+				</div>
+
+				<p class="result-watermark" style="margin: 14px 0 0; position: relative; z-index: 1;">haystack</p>
+			</div>
+
+			<!-- Alignment card -->
+			<div
+				style="
+					background: var(--color-surface);
+					border-radius: 20px;
+					padding: 20px;
+					border: 1.5px solid var(--color-border);
+					margin-bottom: 16px;
+					opacity: {alignmentVisible ? 1 : 0};
+					transform: translateY({alignmentVisible ? '0' : '8px'});
+					transition: opacity 400ms var(--ease-entrance), transform 400ms var(--ease-entrance);
+					position: relative;
+					overflow: hidden;
+				"
+			>
+				<div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--color-score-high); border-radius: 0 2px 2px 0;"></div>
+				<p style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-score-high); margin: 0 0 8px;">Strongest alignment</p>
+				<p style="font-family: var(--font-display); font-size: 1.0625rem; font-style: italic; color: var(--color-primary); margin: 0; line-height: 1.4;">
+					{data.match.strongestAlignment}
+				</p>
 			</div>
 
 			<!-- Component score bars -->
@@ -465,82 +508,6 @@
 				</div>
 			{/if}
 
-			<!-- Share result button -->
-			{#if shareUrl}
-				<div style="
-					margin-bottom: 16px;
-					opacity: {detailVisible ? 1 : 0};
-					transition: opacity 400ms ease;
-				">
-					<button
-						onclick={shareResult}
-						style="
-							width: 100%;
-							border-radius: 100px;
-							background: var(--color-surface);
-							border: 1.5px solid var(--color-border);
-							padding: 14px 24px;
-							font-size: 0.9375rem;
-							font-weight: 600;
-							color: var(--color-primary);
-							cursor: pointer;
-							display: flex;
-							align-items: center;
-							justify-content: center;
-							gap: 8px;
-							transition: transform 150ms var(--ease-spring);
-							font-family: inherit;
-						"
-					>
-						<span style="font-size: 1rem;">↗</span>
-						{shareLabel}
-					</button>
-				</div>
-			{/if}
-
-			<!-- Insight cards -->
-			<div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-				<div
-					style="
-						background: var(--color-surface);
-						border-radius: 20px;
-						padding: 20px;
-						border: 1.5px solid var(--color-border);
-						opacity: {tensionVisible ? 1 : 0};
-						transform: translateY({tensionVisible ? '0' : '8px'});
-						transition: opacity 400ms var(--ease-entrance), transform 400ms var(--ease-entrance);
-						position: relative;
-						overflow: hidden;
-					"
-				>
-					<div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--color-score-low); border-radius: 0 2px 2px 0;"></div>
-					<p style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-score-low); margin: 0 0 8px;">Biggest tension</p>
-					<p style="font-family: var(--font-display); font-size: 1.0625rem; font-style: italic; color: var(--color-primary); margin: 0; line-height: 1.4;">
-						"{data.match.biggestTension}"
-					</p>
-				</div>
-
-				<div
-					style="
-						background: var(--color-surface);
-						border-radius: 20px;
-						padding: 20px;
-						border: 1.5px solid var(--color-border);
-						opacity: {alignmentVisible ? 1 : 0};
-						transform: translateY({alignmentVisible ? '0' : '8px'});
-						transition: opacity 400ms var(--ease-entrance), transform 400ms var(--ease-entrance);
-						position: relative;
-						overflow: hidden;
-					"
-				>
-					<div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--color-score-high); border-radius: 0 2px 2px 0;"></div>
-					<p style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-score-high); margin: 0 0 8px;">Strongest alignment</p>
-					<p style="font-family: var(--font-display); font-size: 1.0625rem; font-style: italic; color: var(--color-primary); margin: 0; line-height: 1.4;">
-						{data.match.strongestAlignment}
-					</p>
-				</div>
-			</div>
-
 			<!-- Full breakdown button -->
 			{#if hasProfiles}
 				<div
@@ -560,6 +527,21 @@
 				</div>
 			{/if}
 
+			<!-- Challenge share -->
+			{#if shareUrl}
+				<div style="
+					margin-bottom: 16px;
+					opacity: {detailVisible ? 1 : 0};
+					transition: opacity 400ms ease;
+					text-align: center;
+				">
+					<p style="font-family: var(--font-display); font-size: 1rem; font-style: italic; color: var(--color-primary); margin: 0 0 12px;">
+						Think someone can beat {data.match.score}%?
+					</p>
+					<ShareButton url={shareUrl} text={challengeShareText} />
+				</div>
+			{/if}
+
 			<!-- CTA -->
 			<div
 				style="
@@ -574,18 +556,46 @@
 							display: block;
 							width: 100%;
 							border-radius: 100px;
-							background: var(--color-accent);
-							padding: 16px 24px;
-							font-size: 1.0625rem;
-							font-weight: 700;
-							color: white;
+							background: var(--color-surface);
+							border: 1.5px solid var(--color-border);
+							padding: 14px 24px;
+							font-size: 0.9375rem;
+							font-weight: 600;
+							color: var(--color-primary);
 							text-align: center;
 							text-decoration: none;
-							box-shadow: 0 4px 16px rgba(232, 86, 63, 0.25);
+							transition: transform 150ms var(--ease-spring);
 						"
 					>
-						See all my matches
+						← See all my matches
 					</a>
+				{:else if shareUrl && data.viewerArchetype}
+					<!-- Responder chain CTA: archetype identity + share prompt -->
+					{@const viewerArch = archetypes[data.viewerArchetype as ArchetypeId]}
+					<div style="
+						background: var(--color-surface);
+						border-radius: 24px;
+						border: 1.5px solid var(--color-border);
+						padding: 24px 20px;
+						text-align: center;
+					">
+						{#if viewerArch}
+							<p style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-secondary); margin: 0 0 6px;">You are</p>
+							<p style="font-family: var(--font-display); font-size: 1.25rem; margin: 0 0 4px; letter-spacing: -0.01em;">{viewerArch.name}</p>
+							<p style="font-size: 0.8125rem; font-style: italic; color: var(--color-accent); margin: 0 0 18px; font-weight: 500;">{viewerArch.tagline}</p>
+						{/if}
+						<p style="font-family: var(--font-display); font-size: 1rem; font-style: italic; color: var(--color-primary); margin: 0 0 14px;">
+							Now see how you match with someone else
+						</p>
+						<ShareButton url={shareUrl} />
+					</div>
+				{:else if shareUrl}
+					<div style="text-align: center;">
+						<p style="font-family: var(--font-display); font-size: 1rem; font-style: italic; color: var(--color-primary); margin: 0 0 14px;">
+							Compare with someone else
+						</p>
+						<ShareButton url={shareUrl} />
+					</div>
 				{:else}
 					<a
 						href="/"
@@ -737,6 +747,14 @@
 				{/if}
 
 				<p class="breakdown-disclaimer">Scores are directional, not definitive. Use these insights as tools, not labels.</p>
+
+				<!-- Share from breakdown -->
+				{#if shareUrl}
+					<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--color-border);">
+						<p style="font-size: 0.8125rem; font-weight: 600; color: var(--color-primary); margin: 0 0 10px; text-align: center;">Share this result</p>
+						<ShareButton url={shareUrl} text={challengeShareText} />
+					</div>
+				{/if}
 			</div>
 		</div>
 	{/if}

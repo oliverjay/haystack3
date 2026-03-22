@@ -256,7 +256,11 @@
 
 		{#if hasMatches}
 			<!-- ===== MATCH LIST ===== -->
-			<div style="display: flex; flex-direction: column; gap: 14px;">
+			<div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px;">
+				<h2 style="font-family: var(--font-display); font-size: 1.125rem; margin: 0; letter-spacing: -0.01em;">Your matches</h2>
+				<p style="font-size: 0.6875rem; color: var(--color-secondary); margin: 0;">{liveMatches.length} {liveMatches.length === 1 ? 'person' : 'people'}</p>
+			</div>
+			<div style="display: flex; flex-direction: column; gap: 10px;">
 	{#each liveMatches as match}
 		{@const isRevealed = revealedIds.has(match.id)}
 		{@const matchArch = archetypes[match.otherArchetype as ArchetypeId]}
@@ -287,19 +291,23 @@
 				{#if !isRevealed}
 					<p style="font-size: 0.75rem; color: var(--color-accent); margin: 2px 0 0; font-weight: 500;">Tap to reveal</p>
 				{:else if matchArch}
-					<p style="font-size: 0.75rem; color: var(--color-secondary); margin: 2px 0 0;">{matchArch.name}</p>
+					<p style="font-size: 0.75rem; color: var(--color-secondary); margin: 2px 0 0;">{matchArch.name} · Tap to view</p>
 				{/if}
 			</div>
 			{#if !isRevealed}
 				<span style="font-size: 1.125rem;">✨</span>
 			{:else}
-				<span style="
-					font-family: var(--font-display);
-					font-size: 1.375rem;
-					font-variant-numeric: tabular-nums;
-					letter-spacing: -0.02em;
-					color: {getScoreColor(match.score)};
-				">{match.score}%</span>
+				<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1px;">
+					<span style="
+						font-family: var(--font-display);
+						font-size: 1.375rem;
+						font-variant-numeric: tabular-nums;
+						letter-spacing: -0.02em;
+						color: {getScoreColor(match.score)};
+						line-height: 1;
+					">{match.score}%</span>
+					<span style="font-size: 0.5625rem; color: var(--color-secondary); font-weight: 500;">compatibility</span>
+				</div>
 			{/if}
 		</button>
 	{/each}

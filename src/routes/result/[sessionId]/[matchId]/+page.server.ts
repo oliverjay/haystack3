@@ -60,6 +60,20 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession } 
 	const isSessionOwner = sessionDataResult.data?.user_id === authSession.user.id;
 	const viewerSession = viewerSessionResult.data;
 
+	// Fetch viewer's archetype from their creator response
+	let viewerArchetype: string | null = null;
+	if (!isSessionOwner && viewerSession) {
+		const { data: viewerResp } = await supabaseAdmin
+			.from('responses')
+			.select('archetype')
+			.eq('user_id', authSession.user.id)
+			.eq('is_creator', true)
+			.order('created_at', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+		viewerArchetype = viewerResp?.archetype ?? null;
+	}
+
 	return {
 		match: {
 			id: match.id,
@@ -88,6 +102,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession } 
 		},
 		sessionId: params.sessionId,
 		isSessionOwner,
-		viewerInviteCode: viewerSession?.invite_code ?? null
+		viewerInviteCode: viewerSession?.invite_code ?? null,
+		viewerArchetype
 	};
 };

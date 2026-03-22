@@ -9,11 +9,12 @@
 	let { data } = $props();
 	let visible = $state(false);
 	let matching = $state(false);
+	let liveCount = $state(0);
+	let liveTimer: ReturnType<typeof setInterval> | undefined;
 
 	$effect(() => {
 		if (!browser) return;
 
-		// If already matched, go straight to the result
 		if (data.returningUser?.alreadyMatchedId && data.returningUser?.alreadyMatchedSessionId) {
 			goto(
 				`/result/${data.returningUser.alreadyMatchedSessionId}/${data.returningUser.alreadyMatchedId}?reveal=1`,
@@ -22,7 +23,16 @@
 			return;
 		}
 
+		liveCount = 14 + Math.floor(Math.random() * 8);
+		liveTimer = setInterval(() => {
+			const delta = Math.random() < 0.5 ? 1 : -1;
+			const next = liveCount + delta;
+			if (next >= 8 && next <= 30) liveCount = next;
+		}, 3500 + Math.random() * 3000);
+
 		setTimeout(() => (visible = true), 100);
+
+		return () => { if (liveTimer) clearInterval(liveTimer); };
 	});
 
 	function start() {
@@ -35,14 +45,14 @@
 	<meta name="description" content="{data.session.creatorName} answered 15 questions about themselves. Answer the same ones — find out your % match." />
 	<meta name="robots" content="noindex" />
 	<meta property="og:title" content="{data.session.creatorName} wants to compare with you" />
-	<meta property="og:description" content="Answer 15 questions. See your compatibility score in 60 seconds." />
+	<meta property="og:description" content="{data.session.creatorName} answered 15 questions about how they connect. Now it's your turn. See your score in 60 seconds." />
 	<meta property="og:image" content="/og/{data.session.id}" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="{data.session.creatorName} wants to compare with you" />
-	<meta name="twitter:description" content="Answer 15 questions. See your compatibility score in 60 seconds." />
+	<meta name="twitter:description" content="{data.session.creatorName} answered 15 questions about how they connect. Now it's your turn. See your score in 60 seconds." />
 	<meta name="twitter:image" content="/og/{data.session.id}" />
 </svelte:head>
 
@@ -199,6 +209,27 @@
 				">🫵</div>
 			</div>
 
+			<!-- What you'll get preview -->
+			<div style="
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 20px;
+			">
+				<div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+					<span style="font-size: 1.125rem;">📊</span>
+					<span style="font-size: 0.6875rem; font-weight: 600; color: var(--color-secondary);">Score</span>
+				</div>
+				<div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+					<span style="font-size: 1.125rem;">🧬</span>
+					<span style="font-size: 0.6875rem; font-weight: 600; color: var(--color-secondary);">Archetype</span>
+				</div>
+				<div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+					<span style="font-size: 1.125rem;">⚡</span>
+					<span style="font-size: 0.6875rem; font-weight: 600; color: var(--color-secondary);">Tension</span>
+				</div>
+			</div>
+
 			<button
 				onclick={start}
 				style="
@@ -219,7 +250,25 @@
 				Take the quiz
 			</button>
 
-			<p style="font-size: 0.75rem; color: var(--color-secondary); margin: 0;">60 seconds. No sign-up needed.</p>
+			<!-- Time badge + social proof -->
+			<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+				<span style="
+					display: inline-flex;
+					align-items: center;
+					gap: 6px;
+					padding: 6px 14px;
+					border-radius: 100px;
+					background: var(--color-surface);
+					border: 1.5px solid var(--color-border);
+					font-size: 0.75rem;
+					font-weight: 600;
+					color: var(--color-primary);
+				">⏱ 60 sec · no sign-up</span>
+				<p style="font-size: 0.6875rem; color: var(--color-secondary); margin: 0; display: flex; align-items: center; gap: 4px;">
+					<span style="display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--color-score-high); animation: pulse 2s ease-in-out infinite;"></span>
+					{liveCount} people comparing right now
+				</p>
+			</div>
 		{/if}
 	</div>
 </main>

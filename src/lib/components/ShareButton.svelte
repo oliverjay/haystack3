@@ -4,11 +4,49 @@
 	let { url, text = '' }: { url: string; text?: string } = $props();
 
 	let copied = $state(false);
-	let expanded = $state(false);
+	let hasNativeShare = $state(false);
 
-	const shareText = $derived(text || `Do we actually get each other? Take this and find out 👀\n${url}`);
+	const defaultText = 'Do we actually get each other? Take this and find out 👀';
+	const baseText = $derived(text || defaultText);
 
-	async function copyAndExpand() {
+	$effect(() => {
+		if (browser) {
+			hasNativeShare = typeof navigator.share === 'function';
+		}
+	});
+
+	function whatsAppText() {
+		return `${baseText}\n${url}`;
+	}
+
+	function smsText() {
+		return `${baseText} ${url}`;
+	}
+
+	function emailSubject() {
+		if (baseText.includes('beat')) return 'Think you can beat our score?';
+		return 'Do we actually match?';
+	}
+
+	function emailBody() {
+		return `${baseText}\n\nTake it here: ${url}`;
+	}
+
+	function twitterText() {
+		return `${baseText}`;
+	}
+
+	async function primaryAction() {
+		if (hasNativeShare) {
+			try {
+				await navigator.share({ text: baseText, url });
+				return;
+			} catch { /* user cancelled or not supported — fall through to copy */ }
+		}
+		await copyLink();
+	}
+
+	async function copyLink() {
 		try {
 			await navigator.clipboard.writeText(url);
 		} catch {
@@ -20,28 +58,27 @@
 			document.body.removeChild(input);
 		}
 		copied = true;
-		expanded = true;
 		setTimeout(() => (copied = false), 2000);
 	}
 
 	function openWhatsApp() {
-		window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+		window.open(`https://wa.me/?text=${encodeURIComponent(whatsAppText())}`, '_blank');
 	}
 
 	function openSMS() {
-		window.open(`sms:?&body=${encodeURIComponent(shareText)}`, '_blank');
+		window.open(`sms:?&body=${encodeURIComponent(smsText())}`, '_blank');
 	}
 
 	function openEmail() {
-		window.open(`mailto:?subject=${encodeURIComponent('Do we actually match?')}&body=${encodeURIComponent(shareText)}`, '_blank');
+		window.open(`mailto:?subject=${encodeURIComponent(emailSubject())}&body=${encodeURIComponent(emailBody())}`, '_blank');
 	}
 
 	function openTelegram() {
-		window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`, '_blank');
+		window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(baseText)}`, '_blank');
 	}
 
 	function openX() {
-		window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+		window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(twitterText())}&url=${encodeURIComponent(url)}`, '_blank');
 	}
 
 	const channels: { label: string; icon: string; action: () => void }[] = [
@@ -55,7 +92,7 @@
 
 <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
 	<button
-		onclick={copyAndExpand}
+		onclick={primaryAction}
 		style="
 			width: 100%;
 			border-radius: 100px;
@@ -70,18 +107,15 @@
 			transition: background 200ms ease, box-shadow 200ms ease, transform 150ms var(--ease-spring);
 		"
 	>
-		{copied ? '✓ Copied!' : 'Copy your link'}
+		{copied ? '✓ Copied!' : hasNativeShare ? 'Send your link' : 'Copy your link'}
 	</button>
 
+	<!-- Channel buttons always visible -->
 	<div
 		style="
 			display: grid;
 			grid-template-columns: repeat(5, 1fr);
 			gap: 6px;
-			overflow: hidden;
-			max-height: {expanded ? '80px' : '0'};
-			opacity: {expanded ? 1 : 0};
-			transition: max-height 300ms ease, opacity 250ms ease;
 		"
 	>
 		{#each channels as ch}
