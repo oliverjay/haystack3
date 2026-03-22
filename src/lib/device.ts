@@ -34,3 +34,13 @@ export function setMySessionId(sessionId: string): void {
 	localStorage.setItem(MY_SESSION_KEY, sessionId);
 }
 
+export function clearSession(): void {
+	if (!browser) return;
+	localStorage.removeItem(MY_SESSION_KEY);
+	localStorage.removeItem(UNLOCK_KEY);
+	const deviceId = localStorage.getItem(DEVICE_ID_KEY);
+	if (deviceId) {
+		localStorage.removeItem(`haystack_auto_session_${deviceId}`);
+	}
+}
+

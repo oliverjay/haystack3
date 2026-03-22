@@ -109,6 +109,7 @@
 			.single();
 		if (session) {
 			setMySessionId(session.id);
+			recoveryLoading = false;
 			goto(`/dashboard/${session.id}`);
 		} else {
 			recoveryError = 'No matches found for that number.';

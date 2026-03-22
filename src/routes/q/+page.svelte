@@ -359,13 +359,13 @@
 							onSelect={answer}
 						/>
 					{:else if q.type === 'slider'}
-						<SliderInput
-							labelLeft={q.labelLeft}
-							labelRight={q.labelRight}
-							value={answers[currentQ]}
-							onChange={(v) => (answers[currentQ] = v)}
-							onConfirm={confirmSlider}
-						/>
+					<SliderInput
+						labelLeft={q.labelLeft}
+						labelRight={q.labelRight}
+						value={answers[currentQ]}
+						onChange={(v) => { answers[currentQ] = v; save(); }}
+						onConfirm={confirmSlider}
+					/>
 					{:else}
 						<SpectrumInput
 							labelLeft={q.labelLeft}

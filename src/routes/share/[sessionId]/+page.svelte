@@ -21,7 +21,7 @@
 
 	const arch = archetypes[data.archetype as ArchetypeId];
 
-	let matchResult = $state<{ id: string; score: number; otherName: string; otherEmoji: string } | null>(null);
+	let matchResult = $state<{ id: string; score: number; otherName: string; otherEmoji: string; otherAvatarUrl: string | null } | null>(null);
 	let pollTimer: ReturnType<typeof setInterval> | undefined;
 	let shareInited = false;
 
@@ -53,13 +53,14 @@
 			.from('matches')
 			.select('id, score, responder_response_id')
 			.eq('session_id', sessionId)
+			.order('created_at', { ascending: false })
 			.limit(1);
 
 		if (matches && matches.length > 0) {
 			const match = matches[0];
 			const { data: resp } = await supabase
 				.from('responses')
-				.select('responder_name, responder_emoji')
+				.select('responder_name, responder_emoji, avatar_url')
 				.eq('id', match.responder_response_id)
 				.single();
 
@@ -67,7 +68,8 @@
 				id: match.id,
 				score: match.score,
 				otherName: resp?.responder_name ?? 'Someone',
-				otherEmoji: resp?.responder_emoji ?? '❓'
+				otherEmoji: resp?.responder_emoji ?? '❓',
+				otherAvatarUrl: resp?.avatar_url ?? null
 			};
 			if (pollTimer) clearInterval(pollTimer);
 		}
