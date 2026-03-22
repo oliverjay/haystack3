@@ -137,9 +137,6 @@
 		if (responseErr) throw responseErr;
 
 		setMySessionId(session.id);
-		if (typeof localStorage !== 'undefined') {
-			localStorage.setItem(`haystack_auto_session_${deviceId}`, session.id);
-		}
 
 		status = 'done';
 		goto(`/share/${session.id}`);
@@ -253,6 +250,7 @@
 
 			await supabase.from('responses').insert(autoRespInsert);
 
+			setMySessionId(autoSession.id);
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem(`haystack_auto_session_${deviceId}`, autoSession.id);
 			}

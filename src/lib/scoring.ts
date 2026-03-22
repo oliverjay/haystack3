@@ -107,8 +107,7 @@ function pickAlignment(scores: number[]): string {
 }
 
 function assignArchetype(answers: number[]): ArchetypeId {
-	// Q1=socialEnergy, Q2=emotionalApproach, Q3=argumentStyle, Q4=respected/loved,
-	// Q5=silenceComfort, Q6=spontaneity, Q7=boundaries, Q8=honesty, Q9=listener/talker, Q10=exes
+	// Axes: socialEnergy(Q1+Q9), emotionalStyle(Q3+Q4+Q8), structure(Q5+Q6+Q10)
 	const socialEnergy = avg(answers[0], answers[8]);
 	const emotionalStyle = avg(answers[2], answers[3], answers[7]);
 	const structure = avg(answers[4], answers[5], answers[9]);

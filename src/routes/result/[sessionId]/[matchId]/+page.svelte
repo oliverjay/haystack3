@@ -331,6 +331,24 @@
 					>
 						See all matches
 					</a>
+				{:else if autoSessionId}
+					<a
+						href="/dashboard/{autoSessionId}"
+						style="
+							display: block;
+							width: 100%;
+							border-radius: 100px;
+							background: var(--color-accent);
+							padding: 16px 24px;
+							font-size: 1.0625rem;
+							font-weight: 700;
+							color: white;
+							text-align: center;
+							text-decoration: none;
+						"
+					>
+						Test someone else
+					</a>
 				{:else}
 					<a
 						href="/"

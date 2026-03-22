@@ -173,7 +173,7 @@
 						<Avatar emoji={data.session.creatorEmoji} avatarUrl={data.session.creatorAvatarUrl} size={56} />
 					</div>
 					<div style="margin-left: -12px; animation: bounceIn 500ms cubic-bezier(0.34, 1.56, 0.64, 1);">
-						<Avatar emoji={matchResult.otherEmoji} size={56} />
+						<Avatar emoji={matchResult.otherEmoji} avatarUrl={matchResult.otherAvatarUrl} size={56} />
 					</div>
 				</div>
 

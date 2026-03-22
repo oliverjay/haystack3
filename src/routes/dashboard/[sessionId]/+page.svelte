@@ -150,26 +150,12 @@
 					pointer-events: none;
 				">✏️</div>
 			</div>
-			<div style="flex: 1; min-width: 0;">
+			<div>
 				<h1 style="font-size: 1.25rem; font-weight: 800; margin: 0; letter-spacing: -0.01em;">{data.session.creatorName}</h1>
 				<p style="font-size: 0.8125rem; color: var(--color-secondary); margin: 2px 0 0;">
 					{data.matches.length} {data.matches.length === 1 ? 'match' : 'matches'}
 				</p>
 			</div>
-			<button
-				onclick={logout}
-				style="
-					background: none;
-					border: none;
-					padding: 6px 10px;
-					font-size: 0.6875rem;
-					font-weight: 500;
-					color: var(--color-secondary);
-					opacity: 0.6;
-					cursor: pointer;
-					font-family: inherit;
-				"
-			>Log out</button>
 		</div>
 
 		<!-- Match list -->
@@ -367,6 +353,23 @@
 				We'll text you when someone finishes.
 			</p>
 		{/if}
+
+		<button
+			onclick={logout}
+			style="
+				display: block;
+				margin: 32px auto 0;
+				background: none;
+				border: none;
+				padding: 8px 16px;
+				font-size: 0.75rem;
+				font-weight: 500;
+				color: var(--color-secondary);
+				opacity: 0.5;
+				cursor: pointer;
+				font-family: inherit;
+			"
+		>Log out</button>
 
 	</div>
 </main>
