@@ -24,7 +24,7 @@
 
 			<section>
 				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Payments</h2>
-				<p style="margin: 0;">The $1 unlock is a one-time payment for digital goods, processed by Stripe. It's non-refundable.</p>
+				<p style="margin: 0;">Haystack is free to use.</p>
 			</section>
 
 			<section>

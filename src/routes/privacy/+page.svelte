@@ -9,7 +9,7 @@
 		<div style="display: flex; flex-direction: column; gap: 24px; font-size: 1rem; line-height: 1.65; color: var(--color-secondary);">
 			<section>
 				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">What we collect</h2>
-				<p style="margin: 0;">Your first name, an emoji you choose, your quiz answers, and your email address for account access. If you pay to unlock results, Stripe processes your payment — we never see your card details.</p>
+				<p style="margin: 0;">Your first name, an emoji you choose, your quiz answers, and your email address for account access.</p>
 			</section>
 
 			<section>
@@ -24,7 +24,7 @@
 
 			<section>
 				<h2 style="font-size: 1.125rem; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Third parties</h2>
-				<p style="margin: 0;">Supabase (database & auth), Vercel (hosting), and Stripe (payments). Each has their own privacy policy.</p>
+				<p style="margin: 0;">Supabase (database & auth) and Vercel (hosting). Each has their own privacy policy.</p>
 			</section>
 
 			<section>
